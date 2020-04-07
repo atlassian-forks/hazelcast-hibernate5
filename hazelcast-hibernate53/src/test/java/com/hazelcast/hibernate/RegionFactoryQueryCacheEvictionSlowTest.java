@@ -18,6 +18,8 @@ package com.hazelcast.hibernate;
 import com.hazelcast.config.MapConfig;
 import com.hazelcast.hibernate.local.TestLocalCacheRegionFactory;
 import com.hazelcast.hibernate.region.TestCacheRegionFactory;
+import com.hazelcast.internal.util.RuntimeAvailableProcessors;
+import com.hazelcast.map.IMap;
 import com.hazelcast.test.HazelcastSerialParametersRunnerFactory;
 import com.hazelcast.test.annotation.SlowTest;
 import org.hibernate.cache.spi.support.QueryResultsRegionTemplate;
@@ -85,7 +87,8 @@ public class RegionFactoryQueryCacheEvictionSlowTest extends HibernateSlowTestSu
     @Test
     public void testQueryCacheCleanup() {
         MapConfig mapConfig = getHazelcastInstance(sf).getConfig().getMapConfig("default-query-results-region");
-        getHazelcastInstance(sf).getMap("default-query-results-region").clear();
+        IMap<Object, Object> map = getHazelcastInstance(sf).getMap("default-query-results-region");
+        map.clear();
 
         final float baseEvictionRate = 0.2f;
         final int numberOfEntities = 100;
@@ -106,6 +109,11 @@ public class RegionFactoryQueryCacheEvictionSlowTest extends HibernateSlowTestSu
           .atMost((int) (CLEANUP_PERIOD + 2), TimeUnit.SECONDS)
           .until(() -> (numberOfEntities - cache.getElementCountInMemory()) == evictedItemCount);
 
-        getHazelcastInstance(sf).getMap("default-query-results-region").clear();
+        System.out.println("CPUs " + RuntimeAvailableProcessors.get());
+        System.out.println("numberOfEntities " + numberOfEntities);
+        System.out.println("cache.getElementCountInMemory() " + cache.getElementCountInMemory());
+        System.out.println("evictedItemCount " + evictedItemCount);
+
+        map.clear();
     }
 }
