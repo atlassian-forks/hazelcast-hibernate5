@@ -25,6 +25,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Environment;
 import org.hibernate.internal.SessionFactoryImpl;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -46,10 +47,14 @@ public class RegionFactoryDefaultSlowTest
         return props;
     }
 
+    @Before
+
     @Test
     public void testQueryCacheCleanup() {
 
         MapConfig mapConfig = getHazelcastInstance(sf).getConfig().getMapConfig("org.hibernate.cache.*");
+        getHazelcastInstance(sf).getMap("org.hibernate.cache.*").clear();
+
         final float baseEvictionRate = 0.2f;
         final int numberOfEntities = 100;
         final int defaultCleanupPeriod = 60;

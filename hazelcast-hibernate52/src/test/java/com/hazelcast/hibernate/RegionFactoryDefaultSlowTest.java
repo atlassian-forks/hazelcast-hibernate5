@@ -49,6 +49,8 @@ public class RegionFactoryDefaultSlowTest
     public void testQueryCacheCleanup() {
 
         MapConfig mapConfig = getHazelcastInstance(sf).getConfig().getMapConfig("org.hibernate.cache.*");
+        getHazelcastInstance(sf).getMap("org.hibernate.cache.*").clear();
+
         final float baseEvictionRate = 0.2f;
         final int numberOfEntities = 100;
         final int defaultCleanupPeriod = 60;
