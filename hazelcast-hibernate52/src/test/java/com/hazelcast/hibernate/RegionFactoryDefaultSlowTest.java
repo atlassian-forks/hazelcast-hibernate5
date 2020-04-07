@@ -67,6 +67,8 @@ public class RegionFactoryDefaultSlowTest
         await()
           .atMost(defaultCleanupPeriod + 1, TimeUnit.SECONDS)
           .until(() -> (numberOfEntities - evictedItemCount) == queryRegion.getCache().size());
+
+        getHazelcastInstance(sf).getMap("org.hibernate.cache.*").clear();
     }
 
     @Test

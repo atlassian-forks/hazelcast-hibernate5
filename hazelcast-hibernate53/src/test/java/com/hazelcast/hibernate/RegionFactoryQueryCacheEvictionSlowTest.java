@@ -105,5 +105,7 @@ public class RegionFactoryQueryCacheEvictionSlowTest extends HibernateSlowTestSu
         await()
           .atMost((int) (CLEANUP_PERIOD + 2), TimeUnit.SECONDS)
           .until(() -> (numberOfEntities - cache.getElementCountInMemory()) == evictedItemCount);
+
+        getHazelcastInstance(sf).getMap("default-query-results-region").clear();
     }
 }
