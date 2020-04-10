@@ -308,6 +308,7 @@ public class LocalRegionCache implements RegionCache {
         }
     }
 
+
     protected void maybeInvalidate(final Object messageObject) {
         Invalidation invalidation = (Invalidation) messageObject;
         Object key = invalidation.getKey();
