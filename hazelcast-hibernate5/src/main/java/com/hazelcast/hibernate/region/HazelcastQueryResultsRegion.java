@@ -34,3 +34,4 @@ public class HazelcastQueryResultsRegion extends AbstractGeneralRegion<LocalRegi
         super(instance, name, props, new LocalRegionCache(name, instance, null, false));
     }
 }
+
