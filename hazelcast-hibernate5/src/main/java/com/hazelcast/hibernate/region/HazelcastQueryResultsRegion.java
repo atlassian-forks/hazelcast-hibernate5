@@ -33,4 +33,5 @@ public class HazelcastQueryResultsRegion extends AbstractGeneralRegion<LocalRegi
         // because the timestamps cache can take care of outdated queries
         super(instance, name, props, new LocalRegionCache(name, instance, null, false));
     }
+
 }
