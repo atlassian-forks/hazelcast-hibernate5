@@ -143,6 +143,7 @@ public abstract class RegionFactoryDefaultTestSupport extends HibernateStatistic
         stats.logSummary();
     }
 
+
     @Test
     public void testSpecificQueryRegionEviction() {
         int entityCount = 10;
