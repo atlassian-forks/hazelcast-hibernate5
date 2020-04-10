@@ -303,7 +303,7 @@ public class LocalRegionCache implements RegionCache {
                 continue;
             }
             final Value v = (Value) expirable;
-            if (timeToLive > 0 && v.getTimestamp() + timeToLive < now) {
+            if (timeToLive > 0 && v.getTimestamp() + timeToLive <= now) {
                 iter.remove();
             } else if (limitSize) {
                 if (entries == null) {
