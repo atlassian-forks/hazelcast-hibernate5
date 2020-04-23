@@ -98,9 +98,9 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:git:git://github.com/hazelcast/hazelcast-hibernate5.git</connection>
-        <developerConnection>scm:git:git@github.com:hazelcast/hazelcast-hibernate5.git</developerConnection>
-        <url>https://github.com/hazelcast/hazelcast/</url>
+        <connection>scm:git:git://github.com/atlassian-forks/hazelcast-hibernate5.git</connection>
+        <developerConnection>scm:git:git@github.com:atlassian-forks/hazelcast-hibernate5.git</developerConnection>
+        <url>https://github.com/atlassian-forks/hazelcast-hibernate5/</url>
     </scm>
     <developers>
         <developer>
@@ -225,14 +225,14 @@
 
     <distributionManagement>
         <repository>
-            <id>release-repository</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+            <id>maven-atlassian-com</id>
+            <name>Atlassian Central Repository</name>
+            <url>https://packages.atlassian.com/maven/central</url>
         </repository>
         <snapshotRepository>
-            <id>snapshot-repository</id>
-            <name>Maven2 Snapshot Repository</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <uniqueVersion>false</uniqueVersion>
+            <id>maven-atlassian-com</id>
+            <name>Atlassian Central Snapshot Repository</name>
+            <url>https://packages.atlassian.com/maven/central-snapshot</url>
         </snapshotRepository>
     </distributionManagement>
 
