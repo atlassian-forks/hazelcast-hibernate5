@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -50,14 +49,12 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class LocalRegionCache implements RegionCache {
 
-    private static final long SEC_TO_MS = 1000L;
-    private static final int MAX_SIZE = 100000;
     private static final float BASE_EVICTION_RATE = 0.2F;
 
     protected final HazelcastInstance hazelcastInstance;
     protected final ITopic<Object> topic;
     protected final MessageListener<Object> messageListener;
-    protected final ConcurrentMap<Object, Expirable> cache;
+    protected final CacheMap<Object, Expirable> cache;
     protected final Comparator versionComparator;
     protected final AtomicLong markerIdCounter;
     protected MapConfig config;
@@ -88,7 +85,7 @@ public class LocalRegionCache implements RegionCache {
      */
     public LocalRegionCache(final String name, final HazelcastInstance hazelcastInstance,
                             final CacheDataDescription metadata, final boolean withTopic) {
-        this(name, hazelcastInstance, metadata, withTopic, null);
+        this(name, hazelcastInstance, metadata, withTopic, null, CacheMaps.cacheMapFor(new ConcurrentHashMap<Object, Expirable>()));
     }
 
     /**
@@ -104,7 +101,7 @@ public class LocalRegionCache implements RegionCache {
      */
     public LocalRegionCache(final String name, final HazelcastInstance hazelcastInstance,
                             final CacheDataDescription metadata, final boolean withTopic,
-                            final EvictionConfig evictionConfig) {
+                            final EvictionConfig evictionConfig, final CacheMap<Object, Expirable> cacheMap) {
         this.hazelcastInstance = hazelcastInstance;
         try {
             config = hazelcastInstance != null ? hazelcastInstance.getConfig().findMapConfig(name) : null;
@@ -112,7 +109,7 @@ public class LocalRegionCache implements RegionCache {
             EmptyStatement.ignore(ignored);
         }
         versionComparator = metadata != null && metadata.isVersioned() ? metadata.getVersionComparator() : null;
-        cache = new ConcurrentHashMap<Object, Expirable>();
+        cache = cacheMap;
         markerIdCounter = new AtomicLong();
 
         messageListener = createMessageListener();
@@ -122,7 +119,7 @@ public class LocalRegionCache implements RegionCache {
         } else {
             topic = null;
         }
-        this.evictionConfig = evictionConfig == null ? createEvictionConfig(config) : evictionConfig;
+        this.evictionConfig = evictionConfig == null ? EvictionConfigs.evictionConfigFor(config) : evictionConfig;
     }
 
     @Override
@@ -309,7 +306,7 @@ public class LocalRegionCache implements RegionCache {
 
     @Override
     public Map asMap() {
-        return cache;
+        return cache.asMap();
     }
 
     void cleanup() {
@@ -452,44 +449,5 @@ public class LocalRegionCache implements RegionCache {
         public int hashCode() {
             return key == null ? 0 : key.hashCode();
         }
-    }
-
-
-    /**
-     * Defines the parameters used when evicting entries from the cache.
-     */
-    public interface EvictionConfig {
-        /**
-         * @return the duration (in milliseconds) for which an item should live in the cache
-         */
-        long getTimeToLiveMillis();
-
-        /**
-         * @return the maximum number of entries that should live in the cache
-         */
-        int getMaxSize();
-    }
-
-    /**
-     * Creates an {@link EvictionConfig} for a given Hazelcast {@link MapConfig}.
-     *
-     * @param mapConfig the MapConfig to use. If null, defaults will be used.
-     */
-    private static EvictionConfig createEvictionConfig(final MapConfig mapConfig) {
-        return new EvictionConfig() {
-            @Override
-            public long getTimeToLiveMillis() {
-                return mapConfig == null ?
-                        CacheEnvironment.getDefaultCacheTimeoutInMillis() :
-                        mapConfig.getTimeToLiveSeconds() * SEC_TO_MS;
-            }
-
-            @Override
-            public int getMaxSize() {
-                return mapConfig == null ?
-                        MAX_SIZE :
-                        mapConfig.getMaxSizeConfig().getSize();
-            }
-        };
     }
 }
